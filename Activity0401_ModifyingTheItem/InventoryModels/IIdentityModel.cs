@@ -1,8 +1,7 @@
 ﻿namespace InventoryModels
 {
-    public class Item
+    interface IIdentityModel
     {
         public int Id { get; set; }
-        public string Name { get; set; }
     }
 }

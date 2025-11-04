@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Activity0302_EFCoreNewDb", "Activity0302_EFCoreNewDb\Activity0302_EFCoreNewDb.csproj", "{DDB20541-5224-4524-9D36-7FC0390A8F4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Activity0401_ModifyingTheItem", "Activity0401_ModifyingTheItem\Activity0401_ModifyingTheItem.csproj", "{DDB20541-5224-4524-9D36-7FC0390A8F4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InventoryDatabaseCore", "InventoryDatabaseCore\InventoryDatabaseCore.csproj", "{80645032-790D-473D-9540-E688FDC13954}"
 EndProject
