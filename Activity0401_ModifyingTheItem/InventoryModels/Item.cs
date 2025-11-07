@@ -31,5 +31,7 @@ namespace InventoryModels
 
         public virtual Category? Category { get; set; }
         public int? CategoryId { get; set; }
+
+        public virtual List<ItemGenre> ItemGenres { get; set; } = new List<ItemGenre>();
     }
 }

@@ -14,11 +14,22 @@ namespace InventoryDatabaseCore
 
         public DbSet<CategoryColor> CategoryColors { get; set; }
 
+        public DbSet<Genre> Genres { get; set; }
+
         public InventoryDbContext() : base() { }
 
         public InventoryDbContext(DbContextOptions options) : base(options) 
         { 
         
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //unique, non-clustered index for ItemGenre relationships
+            modelBuilder.Entity<ItemGenre>()
+                .HasIndex(ig => new { ig.ItemId, ig.GenreId })
+                .IsUnique()
+                .IsClustered(false);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
