@@ -4,6 +4,7 @@ using InventoryDatabaseCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InventoryDatabaseCore.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251107204716_CreateCategoriesTableForItemCategorie")]
+    partial class CreateCategoriesTableForItemCategorie
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,6 @@ namespace InventoryDatabaseCore.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CategoryColorId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("CreatedByUserId")
                         .HasColumnType("int");
@@ -58,20 +58,6 @@ namespace InventoryDatabaseCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("InventoryModels.CategoryColor", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ColorValue")
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CategoryColors");
                 });
 
             modelBuilder.Entity("InventoryModels.Item", b =>
@@ -141,17 +127,6 @@ namespace InventoryDatabaseCore.Migrations
                     b.ToTable("Items");
                 });
 
-            modelBuilder.Entity("InventoryModels.CategoryColor", b =>
-                {
-                    b.HasOne("InventoryModels.Category", "Category")
-                        .WithOne("CategoryColor")
-                        .HasForeignKey("InventoryModels.CategoryColor", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
             modelBuilder.Entity("InventoryModels.Item", b =>
                 {
                     b.HasOne("InventoryModels.Category", "Category")
@@ -163,8 +138,6 @@ namespace InventoryDatabaseCore.Migrations
 
             modelBuilder.Entity("InventoryModels.Category", b =>
                 {
-                    b.Navigation("CategoryColor");
-
                     b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
