@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper.QueryableExtensions;
 
 namespace Activity0902_SettingUpAutomapper
 {
@@ -24,10 +25,13 @@ namespace Activity0902_SettingUpAutomapper
         {
             BuildOptions();
             ListInventory();
+            ListInventoryWithProjection();
+            ListCategoriesAndColors();
             GetItemsForListingWithParams();
             AllActiveItemsPipeDelimitedString();
             GetItemsTotalValues();
             GetItemsWithGenres();
+            GetItemsForListingLinq();
         }
 
         static void BuildOptions()
@@ -36,7 +40,10 @@ namespace Activity0902_SettingUpAutomapper
             _optionsBuilder = new DbContextOptionsBuilder<InventoryDbContext>();
             _optionsBuilder.UseSqlServer(_configuration.GetConnectionString("InventoryManager"));
 
-            _mapperConfig = new MapperConfiguration(cfg => {cfg.AddProfile<InventoryMapper>();});
+            _mapperConfig = new MapperConfiguration(cfg => {
+                cfg.ShouldMapMethod = (m => false);
+                cfg.AddProfile<InventoryMapper>();
+            });
             _mapperConfig.AssertConfigurationIsValid();
             _mapper = _mapperConfig.CreateMapper();
         }
@@ -47,6 +54,18 @@ namespace Activity0902_SettingUpAutomapper
             {
                 var items = db.Items.Take(5).OrderBy(x => x.Name).ToList();
                 var result = _mapper.Map<List<Item>, List<ItemDto>>(items);
+                items.ForEach(x => Console.WriteLine($"New Item: {x}"));
+            }
+        }
+
+        static void ListInventoryWithProjection()
+        {
+            using (var db = new InventoryDbContext(_optionsBuilder.Options))
+            {
+                var items = db.Items.Take(5)
+                                .OrderBy(x => x.Name)
+                                .ProjectTo<ItemDto>(_mapper.ConfigurationProvider)
+                                .ToList();
                 items.ForEach(x => Console.WriteLine($"New Item: {x}"));
             }
         }
@@ -115,6 +134,50 @@ namespace Activity0902_SettingUpAutomapper
                                         $"|{item.Genre ?? "",-4}");
                 }
             }
+        }
+
+        static void GetItemsForListingLinq()
+        {
+            var minDateValue = new DateTime(2020, 1, 1);
+            var maxDateValue = new DateTime(2021, 1, 1);
+            using (var db = new InventoryDbContext(_optionsBuilder.Options))
+            {
+                var results = db.Items.Select(x => new GetItemsForListingWithDateDto
+                {
+                    CreatedDate = x.CreatedDate,
+                    CategoryName = x.Category.Name,
+                    Description = x.Description,
+                    IsActive = x.IsActive,
+                    IsDeleted = x.IsDeleted,
+                    Name = x.Name,
+                    Notes = x.Notes
+                })
+                    .Where(x => x.CreatedDate >= minDateValue && x.CreatedDate <= maxDateValue)
+                    .OrderBy(y => y.CategoryName)
+                        .ThenBy(z => z.Name)
+                    .ToList();
+
+                foreach (var item in results)
+                {
+                    Console.WriteLine($"ITEM {item.CategoryName}| {item.Name} - { item.Description}");
+                }
+            }
+        }
+
+        private static void ListCategoriesAndColors()
+        {
+            using (var db = new InventoryDbContext(_optionsBuilder.Options))
+            {
+                var results = db.Categories
+                                .Include(x => x.CategoryColor)
+                                .ProjectTo<CategoryDto>(_mapper.ConfigurationProvider).ToList();
+
+                foreach (var c in results)
+                {
+                    Console.WriteLine($"{c.Category} | {c.CategoryColor.Color}");
+                }
+            }
+
         }
     }
 }
